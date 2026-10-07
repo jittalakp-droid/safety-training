@@ -431,7 +431,19 @@
         ];
 
         let masterEmployees = JSON.parse(localStorage.getItem('master_employees_v5')) || defaultMasterEmployees;
-        let trainingRecords = JSON.parse(localStorage.getItem('training_records_db_v16')) || defaultTrainingRecords;
+        // บังคับเช็คเวอร์ชัน ถ้าไม่ใช่เวอร์ชันล่าสุด ให้ล้างข้อมูลเก่าทิ้งทันที
+const CURRENT_DB_VERSION = 'v16'; 
+if (localStorage.getItem('db_version') !== CURRENT_DB_VERSION) {
+    localStorage.removeItem('training_records_db_v15'); // ลบเวอร์ชันเก่าทิ้ง
+    localStorage.removeItem('master_employees_v4');     // ลบพนักงานเก่าทิ้ง (ถ้าต้องการ)
+    localStorage.setItem('db_version', CURRENT_DB_VERSION);
+}
+
+let masterEmployees = JSON.parse(localStorage.getItem('master_employees_v4')) || defaultMasterEmployees;
+let trainingRecords = JSON.parse(localStorage.getItem('training_records_db_v16')) || defaultTrainingRecords;
+
+// บังคับเซฟทับทันทีเพื่อให้ข้อมูลตรงกับ default ล่าสุด
+localStorage.setItem('training_records_db_v16', JSON.stringify(trainingRecords));
         let adminPassword = localStorage.getItem('admin_password') || 'admin123';
         let isAdminLoggedIn = sessionStorage.getItem('is_admin_logged_in') === 'true';
 
