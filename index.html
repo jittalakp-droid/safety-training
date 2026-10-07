@@ -341,7 +341,7 @@
                 </div>
 
                 <div>
-                    <label style="display: block; font-size: 0.75rem; font-weight: bold; color: #475569; margin-bottom: 0.25rem;">ใบวุฒิบัตร: เลือกไฟล์จากเครื่อง หรือวางลิงก์ (URL / PDF)</label>
+                    <label style="display: block; font-size: 0.75rem; font-weight: bold; color: #475569; margin-bottom: 0.25rem;">ใบวุฒิบัตร: เลือกไฟล์จากเครื่อง (แนะนำ) หรือวางลิงก์ (URL)</label>
                     <div style="display: flex; flex-direction: column; gap: 0.5rem;">
                         <input type="file" id="cert-file-input" accept="image/*,application/pdf" onchange="handleFileUpload(event)" style="padding: 0.4rem; font-size: 0.8rem;">
                         <input type="url" id="cert-url" placeholder="หรือวางลิงก์เว็บรูปภาพ/PDF ที่นี่ (เช่น https://...)">
@@ -430,13 +430,13 @@
         ];
 
         let masterEmployees = JSON.parse(localStorage.getItem('master_employees_v4')) || defaultMasterEmployees;
-        let trainingRecords = JSON.parse(localStorage.getItem('training_records_db_v13')) || defaultTrainingRecords;
+        let trainingRecords = JSON.parse(localStorage.getItem('training_records_db_v14')) || defaultTrainingRecords;
         let adminPassword = localStorage.getItem('admin_password') || 'admin123';
         let isAdminLoggedIn = sessionStorage.getItem('is_admin_logged_in') === 'true';
 
         function saveToStorage() {
             localStorage.setItem('master_employees_v4', JSON.stringify(masterEmployees));
-            localStorage.setItem('training_records_db_v13', JSON.stringify(trainingRecords));
+            localStorage.setItem('training_records_db_v14', JSON.stringify(trainingRecords));
         }
 
         function resetToDefaultData() {
@@ -891,7 +891,7 @@
             document.getElementById('status').value = item.status;
             document.getElementById('cert-url').value = item.certUrl || '';
             if(item.certUrl) {
-                document.getElementById('file-upload-status').innerText = '✅ มีลิงก์หรือไฟล์ใบวุฒิบัตรเดิมบันทึกไว้แล้ว';
+                document.getElementById('file-upload-status').innerText = '✅ มีไฟล์หรือลิงก์ใบวุฒิบัตรเดิมบันทึกไว้แล้ว';
             }
         }
 
