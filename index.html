@@ -92,12 +92,6 @@
                     <div>
                         <select id="filter-dept" onchange="filterData()">
                             <option value="">ทุกแผนก / ฝ่ายทั้งหมด</option>
-                            <option value="IT & Digital">IT & Digital</option>
-                            <option value="Production">Production (ฝ่ายผลิต)</option>
-                            <option value="Quality Assurance">Quality Assurance (QA)</option>
-                            <option value="Engineering & Maintenance">Engineering & Maintenance</option>
-                            <option value="Safety & Environment">Safety (จป./สิ่งแวดล้อม)</option>
-                            <option value="HR & Admin">HR & Admin</option>
                         </select>
                     </div>
                     <div>
@@ -234,6 +228,7 @@
         <div class="modal-box" style="max-width: 400px;">
             <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f1f5f9; padding-bottom: 0.75rem;">
                 <h3 style="font-weight: bold; font-size: 1.1rem; color: #1d4ed8;">🔐 เข้าสู่ระบบแอดมินหลังบ้าน</h3>
+                <button type="button" onclick="switchTab('employee')" style="background: none; border: none; font-size: 1.25rem; cursor: pointer; color: #64748b;">✕</button>
             </div>
             <form onsubmit="handleAdminLogin(event)" style="display: flex; flex-direction: column; gap: 1rem;">
                 <div>
@@ -253,7 +248,7 @@
         <div class="modal-box" style="max-width: 400px;">
             <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f1f5f9; padding-bottom: 0.75rem;">
                 <h3 style="font-weight: bold; font-size: 1.1rem; color: #1d4ed8;">🔑 เปลี่ยนรหัสผ่านแอดมิน</h3>
-                <button onclick="closeChangePasswordModal()" style="background: none; border: none; font-size: 1.25rem; cursor: pointer; color: #64748b;">✕</button>
+                <button type="button" onclick="closeChangePasswordModal()" style="background: none; border: none; font-size: 1.25rem; cursor: pointer; color: #64748b;">✕</button>
             </div>
             <form onsubmit="saveNewPassword(event)" style="display: flex; flex-direction: column; gap: 1rem;">
                 <div>
@@ -281,7 +276,7 @@
         <div class="modal-box">
             <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f1f5f9; padding-bottom: 0.75rem;">
                 <h3 id="modal-title" style="font-weight: bold; font-size: 1.1rem;">เพิ่มประวัติการฝึกอบรมใหม่</h3>
-                <button onclick="closeModal()" style="background: none; border: none; font-size: 1.25rem; cursor: pointer; color: #64748b;">✕</button>
+                <button type="button" onclick="closeModal()" style="background: none; border: none; font-size: 1.25rem; cursor: pointer; color: #64748b;">✕</button>
             </div>
 
             <form id="training-form" onsubmit="saveTrainingRecord(event)" style="display: flex; flex-direction: column; gap: 1rem;">
@@ -363,7 +358,7 @@
         <div class="modal-box" style="max-width: 450px;">
             <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f1f5f9; padding-bottom: 0.75rem;">
                 <h3 id="employee-modal-title" style="font-weight: bold; font-size: 1.1rem;">เพิ่มพนักงานใหม่ในระบบ</h3>
-                <button onclick="closeEmployeeModal()" style="background: none; border: none; font-size: 1.25rem; cursor: pointer; color: #64748b;">✕</button>
+                <button type="button" onclick="closeEmployeeModal()" style="background: none; border: none; font-size: 1.25rem; cursor: pointer; color: #64748b;">✕</button>
             </div>
 
             <form id="employee-form" onsubmit="saveMasterEmployee(event)" style="display: flex; flex-direction: column; gap: 1rem;">
@@ -382,14 +377,7 @@
                 </div>
                 <div>
                     <label style="display: block; font-size: 0.75rem; font-weight: bold; color: #475569; margin-bottom: 0.25rem;">แผนก / ฝ่าย <span style="color: #e11d48;">*</span></label>
-                    <select id="master-emp-dept" required>
-                        <option value="IT & Digital">IT & Digital</option>
-                        <option value="Production">Production (ฝ่ายผลิต)</option>
-                        <option value="Quality Assurance">Quality Assurance (QA)</option>
-                        <option value="Engineering & Maintenance">Engineering & Maintenance</option>
-                        <option value="Safety & Environment">Safety (จป./สิ่งแวดล้อม)</option>
-                        <option value="HR & Admin">HR & Admin</option>
-                    </select>
+                    <input type="text" id="master-emp-dept" required placeholder="เช่น Production หรือ IT & Digital">
                 </div>
 
                 <div style="display: flex; justify-content: flex-end; gap: 0.5rem; border-top: 1px solid #f1f5f9; padding-top: 1rem;">
@@ -407,16 +395,16 @@
                 <h3 style="font-weight: bold; font-size: 1rem;">🎓 ใบวุฒิบัตรผ่านการฝึกอบรม (Certificate)</h3>
                 <div style="display: flex; gap: 0.5rem;">
                     <button onclick="window.print()" class="btn" style="background: rgba(255,255,255,0.2); color: white; padding: 0.25rem 0.75rem; font-size: 0.75rem;">🖨️ พิมพ์</button>
-                    <button onclick="closeCertModal()" style="background: none; border: none; color: white; font-size: 1.25rem; cursor: pointer;">✕</button>
+                    <button type="button" onclick="closeCertModal()" style="background: none; border: none; color: white; font-size: 1.25rem; cursor: pointer;">✕</button>
                 </div>
             </div>
             
             <div id="cert-modal-body" style="padding: 2rem; text-align: center; background: #f8fafc; max-height: 75vh; overflow-y: auto;">
-                <!-- Dynamically rendered (Template / Image / PDF Frame) -->
+                <!-- Dynamically rendered -->
             </div>
 
             <div style="padding: 1rem 1.5rem; background: #f1f5f9; display: flex; justify-content: flex-end;">
-                <button onclick="closeCertModal()" class="btn btn-secondary">ปิดหน้าต่าง</button>
+                <button type="button" onclick="closeCertModal()" class="btn btn-secondary">ปิดหน้าต่าง</button>
             </div>
         </div>
     </div>
@@ -437,14 +425,14 @@
             { id: "TR-003", empCode: "EMP-003", empName: "นายกิตติ มั่นคง", empPosition: "QA Inspector", dept: "Quality Assurance", course: "ISO 9001:2015 Internal Quality Auditor", provider: "TUV Bureau Veritas", date: "2026-01-20", validityYears: 3, hours: 18, score: "ผ่าน (92%)", status: "ผ่านการอบรมแล้ว", certUrl: "" }
         ];
 
-        let masterEmployees = JSON.parse(localStorage.getItem('master_employees_v3')) || defaultMasterEmployees;
-        let trainingRecords = JSON.parse(localStorage.getItem('training_records_db_v10')) || defaultTrainingRecords;
+        let masterEmployees = JSON.parse(localStorage.getItem('master_employees_v4')) || defaultMasterEmployees;
+        let trainingRecords = JSON.parse(localStorage.getItem('training_records_db_v11')) || defaultTrainingRecords;
         let adminPassword = localStorage.getItem('admin_password') || 'admin123';
         let isAdminLoggedIn = sessionStorage.getItem('is_admin_logged_in') === 'true';
 
         function saveToStorage() {
-            localStorage.setItem('master_employees_v3', JSON.stringify(masterEmployees));
-            localStorage.setItem('training_records_db_v10', JSON.stringify(trainingRecords));
+            localStorage.setItem('master_employees_v4', JSON.stringify(masterEmployees));
+            localStorage.setItem('training_records_db_v11', JSON.stringify(trainingRecords));
         }
 
         function resetToDefaultData() {
@@ -586,6 +574,21 @@
             };
         }
 
+        function updateDeptFilterDropdown() {
+            const select = document.getElementById('filter-dept');
+            const currentVal = select.value;
+            const depts = [...new Set(masterEmployees.map(e => e.dept))].filter(Boolean);
+            
+            select.innerHTML = '<option value="">ทุกแผนก / ฝ่ายทั้งหมด</option>';
+            depts.forEach(d => {
+                const opt = document.createElement('option');
+                opt.value = d;
+                opt.textContent = d;
+                if(d === currentVal) opt.selected = true;
+                select.appendChild(opt);
+            });
+        }
+
         function renderEmployeeTable(data = trainingRecords) {
             const tbody = document.getElementById('employee-table-body');
             const empty = document.getElementById('empty-state');
@@ -630,7 +633,7 @@
                         <div style="font-size: 0.7rem; color: #64748b; margin-top: 0.2rem;">ผล: ${item.score || 'ผ่าน'}</div>
                     </td>
                     <td style="text-align: center;">
-                        <button onclick='openCertModal(${JSON.stringify(item)})' class="btn btn-secondary" style="font-size: 0.75rem; padding: 0.35rem 0.75rem; background: #e0e7ff; color: #3730a3;">📜 ดูใบวุฒิบัตร</button>
+                        <button type="button" onclick='openCertModal(${JSON.stringify(item)})' class="btn btn-secondary" style="font-size: 0.75rem; padding: 0.35rem 0.75rem; background: #e0e7ff; color: #3730a3;">📜 ดูใบวุฒิบัตร</button>
                     </td>
                 `;
                 tbody.appendChild(tr);
@@ -679,8 +682,8 @@
                     <td style="font-size: 0.75rem;">${item.validityYears == 0 ? 'ตลอดชีพ' : item.validityYears + ' ปี'}</td>
                     <td><span class="badge ${badgeClass}">${effStatus}</span></td>
                     <td style="text-align: center;">
-                        <button onclick='editRecord("${item.id}")' class="btn btn-secondary" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;">✏️</button>
-                        <button onclick='deleteRecord("${item.id}")' class="btn btn-danger" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;">🗑️</button>
+                        <button type="button" onclick='editRecord("${item.id}")' class="btn btn-secondary" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;">✏️</button>
+                        <button type="button" onclick='deleteRecord("${item.id}")' class="btn btn-danger" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;">🗑️</button>
                     </td>
                 `;
                 tbody.appendChild(tr);
@@ -701,13 +704,14 @@
                     <td style="font-size: 0.75rem; color: #64748b;">${emp.position}</td>
                     <td><span style="background: #f1f5f9; padding: 0.2rem 0.5rem; border-radius: 0.35rem; font-size: 0.75rem;">${emp.dept}</span></td>
                     <td style="text-align: center;">
-                        <button onclick='editMasterEmployee("${emp.code}")' class="btn btn-secondary" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;">✏️</button>
-                        <button onclick='deleteMasterEmployee("${emp.code}")' class="btn btn-danger" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;">🗑️</button>
+                        <button type="button" onclick='editMasterEmployee("${emp.code}")' class="btn btn-secondary" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;">✏️</button>
+                        <button type="button" onclick='deleteMasterEmployee("${emp.code}")' class="btn btn-danger" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;">🗑️</button>
                     </td>
                 `;
                 tbody.appendChild(tr);
             });
             populateEmployeeSelect();
+            updateDeptFilterDropdown();
         }
 
         function populateEmployeeSelect(selectedCode = '') {
@@ -764,7 +768,7 @@
                 document.getElementById('preview-emp-dept').innerText = '-';
             }
         }
-        function closeModal() { document.getElementById('training-modal').classList.add('active'); }
+        function closeModal() { document.getElementById('training-modal').classList.remove('active'); }
 
         function openEmployeeModal(isEdit = false) {
             document.getElementById('employee-modal').classList.add('active');
@@ -774,7 +778,7 @@
                 document.getElementById('emp-original-code').value = '';
             }
         }
-        function closeEmployeeModal() { document.getElementById('employee-modal').classList.add('active'); }
+        function closeEmployeeModal() { document.getElementById('employee-modal').classList.remove('active'); }
 
         function saveMasterEmployee(e) {
             e.preventDefault();
@@ -885,7 +889,6 @@
             if (item.certUrl && item.certUrl.trim() !== '') {
                 const urlLower = item.certUrl.toLowerCase();
                 if (urlLower.endsWith('.pdf') || urlLower.includes('pdf')) {
-                    // Render PDF Frame Viewer
                     body.innerHTML = `
                         <div style="display: flex; flex-direction: column; gap: 1rem; height: 600px;">
                             <div style="display: flex; justify-content: space-between; align-items: center; background: #fff; padding: 0.75rem 1rem; border-radius: 0.75rem; border: 1px solid #e2e8f0;">
@@ -896,13 +899,11 @@
                         </div>
                     `;
                 } else {
-                    // Render Image Viewer
                     body.innerHTML = `
                         <img src="${item.certUrl}" alt="Certificate" style="max-width: 100%; max-height: 550px; border-radius: 0.75rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1); border: 1px solid #cbd5e1; object-fit: contain;">
                     `;
                 }
             } else {
-                // Render Built-in Certificate Template
                 body.innerHTML = `
                     <div style="background: white; border: 6px double #d97706; padding: 2.5rem; border-radius: 1rem; box-shadow: 0 4px 6px rgba(0,0,0,0.05); text-align: center;">
                         <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">🏆</div>
@@ -924,7 +925,6 @@
 
             document.getElementById('cert-modal').classList.add('active');
         }
-
         function closeCertModal() { document.getElementById('cert-modal').classList.remove('active'); }
 
         function renderAll() {
