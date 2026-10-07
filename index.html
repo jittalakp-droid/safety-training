@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ระบบจัดการประวัติฝึกอบรมพนักงาน (Employee Training Record System)</title>
+    <title>ระบบจัดการประวัติฝึกอบรมพนักงานของโรงงานผลิตน้ำมหาสวัสดิ์ (Employee Training Record System)</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: Tahoma, sans-serif; }
         body { background-color: #f8fafc; color: #1e293b; min-height: 100vh; display: flex; flex-direction: column; }
@@ -67,7 +67,7 @@
             <div class="logo-area">
                 <div class="logo-icon">🎓</div>
                 <div>
-                    <h1 style="font-size: 1.15rem; font-weight: bold;">ระบบประวัติฝึกอบรมพนักงาน</h1>
+                    <h1 style="font-size: 1.15rem; font-weight: bold;">ระบบประวัติฝึกอบรมพนักงานและผู้ปฏิบัติงานของโรงงานผลิตน้ำมหาสวัสดิ์</h1>
                     <p style="font-size: 0.75rem; color: #cbd5e1;">Employee Training Records & Certificate Management System</p>
                 </div>
             </div>
@@ -109,7 +109,7 @@
             <div class="table-container">
                 <div style="padding: 1rem 1.25rem; border-bottom: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center;">
                     <div>
-                        <h3 style="font-weight: bold; color: #1e293b;">รายการประวัติการฝึกอบรมพนักงาน</h3>
+                        <h3 style="font-weight: bold; color: #1e293b;">รายการประวัติการฝึกอบรมพนักงานและผู้ปฏิบัติงาน</h3>
                         <p style="font-size: 0.75rem; color: #64748b;">ตรวจสอบข้อมูลการผ่านอบรมและเรียกดูใบวุฒิบัตรอิเล็กทรอนิกส์</p>
                     </div>
                     <span id="record-count" class="badge" style="background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe;">0 รายการ</span>
@@ -166,7 +166,7 @@
             <div class="card" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
                 <div style="display: flex; gap: 0.5rem;">
                     <button onclick="switchAdminTab('training')" id="admin-tab-training" class="tab-btn active" style="background: #2563eb; color: white;">จัดการประวัติอบรม</button>
-                    <button onclick="switchAdminTab('employees')" id="admin-tab-employees" class="tab-btn" style="background: #f1f5f9; color: #334155;">จัดการรายชื่อพนักงาน (<span id="emp-master-count">0</span>)</button>
+                    <button onclick="switchAdminTab('employees')" id="admin-tab-employees" class="tab-btn" style="background: #f1f5f9; color: #334155;">จัดการรายชื่อพนักงานและผู้ปฏิบัติงาน (<span id="emp-master-count">0</span>)</button>
                 </div>
                 <div style="display: flex; gap: 0.5rem;">
                     <button onclick="resetToDefaultData()" class="btn btn-secondary">🔄 รีเซ็ตข้อมูล</button>
@@ -207,7 +207,7 @@
                             <th>รหัสพนักงาน</th>
                             <th>ชื่อ-นามสกุล</th>
                             <th>ตำแหน่ง</th>
-                            <th>แผนก / ฝ่าย</th>
+                            <th>สังกัด</th>
                             <th style="text-align: center;">จัดการ</th>
                         </tr>
                     </thead>
@@ -220,7 +220,7 @@
 
     <!-- Footer -->
     <footer>
-        <p>© 2026 ระบบประวัติฝึกอบรมพนักงานและผู้ปฏิบัติงาน (Employee Training System). พัฒนาขึ้นเพื่อความสะดวกในการบริหารจัดการทรัพยากรบุคคล.</p>
+        <p>© 2026 ระบบประวัติฝึกอบรมพนักงานและผู้ปฏิบัติงาน (Employee Training System). พัฒนาขึ้นเพื่อความสะดวกในการบริหารจัดการทรัพยากรบุคคลของหน่วยงาน สปช.ฝผม.</p>
     </footer>
 
     <!-- ================= MODAL: ADMIN LOGIN ================= -->
@@ -292,7 +292,7 @@
                 <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; background: #f8fafc; padding: 0.75rem; border-radius: 0.75rem; border: 1px solid #e2e8f0; font-size: 0.75rem;">
                     <div><span style="color: #64748b; display: block;">รหัสพนักงาน</span><strong id="preview-emp-code">-</strong></div>
                     <div><span style="color: #64748b; display: block;">ตำแหน่ง</span><strong id="preview-emp-position">-</strong></div>
-                    <div><span style="color: #64748b; display: block;">แผนก / ฝ่าย</span><strong id="preview-emp-dept">-</strong></div>
+                    <div><span style="color: #64748b; display: block;">สังกัด</span><strong id="preview-emp-dept">-</strong></div>
                 </div>
 
                 <div>
@@ -316,6 +316,7 @@
                             <option value="1">1 ปี</option>
                             <option value="2">2 ปี</option>
                             <option value="3">3 ปี</option>
+                            <option value="3">4 ปี</option>
                             <option value="5">5 ปี</option>
                         </select>
                     </div>
