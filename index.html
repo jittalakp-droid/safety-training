@@ -341,8 +341,12 @@
                 </div>
 
                 <div>
-                    <label style="display: block; font-size: 0.75rem; font-weight: bold; color: #475569; margin-bottom: 0.25rem;">ลิงก์ใบวุฒิบัตร (รองรับลิงก์รูปภาพ หรือ ไฟล์ PDF)</label>
-                    <input type="url" id="cert-url" placeholder="https://... (เช่น .jpg, .png หรือ .pdf)">
+                    <label style="display: block; font-size: 0.75rem; font-weight: bold; color: #475569; margin-bottom: 0.25rem;">อัปโหลดรูปภาพ / ไฟล์ PDF วุฒิบัตรจากเครื่อง (หรือวางลิงก์)</label>
+                    <div style="display: flex; gap: 0.5rem; align-items: center;">
+                        <input type="file" id="cert-file-input" accept="image/*,application/pdf" onchange="handleFileUpload(event)" style="padding: 0.4rem; font-size: 0.8rem;">
+                        <input type="hidden" id="cert-url">
+                    </div>
+                    <p id="file-upload-status" style="font-size: 0.7rem; color: #059669; margin-top: 0.25rem;"></p>
                 </div>
 
                 <div style="display: flex; justify-content: flex-end; gap: 0.5rem; border-top: 1px solid #f1f5f9; padding-top: 1rem; margin-top: 0.5rem;">
@@ -426,13 +430,13 @@
         ];
 
         let masterEmployees = JSON.parse(localStorage.getItem('master_employees_v4')) || defaultMasterEmployees;
-        let trainingRecords = JSON.parse(localStorage.getItem('training_records_db_v11')) || defaultTrainingRecords;
+        let trainingRecords = JSON.parse(localStorage.getItem('training_records_db_v12')) || defaultTrainingRecords;
         let adminPassword = localStorage.getItem('admin_password') || 'admin123';
         let isAdminLoggedIn = sessionStorage.getItem('is_admin_logged_in') === 'true';
 
         function saveToStorage() {
             localStorage.setItem('master_employees_v4', JSON.stringify(masterEmployees));
-            localStorage.setItem('training_records_db_v11', JSON.stringify(trainingRecords));
+            localStorage.setItem('training_records_db_v12', JSON.stringify(trainingRecords));
         }
 
         function resetToDefaultData() {
@@ -587,6 +591,17 @@
                 if(d === currentVal) opt.selected = true;
                 select.appendChild(opt);
             });
+        }
+
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(uploadEvent) {
+                document.getElementById('cert-url').value = uploadEvent.target.result;
+                document.getElementById('file-upload-status').innerText = `✅ อัปโหลดไฟล์ "${file.name}" เรียบร้อยแล้ว`;
+            };
+            reader.readAsDataURL(file);
         }
 
         function renderEmployeeTable(data = trainingRecords) {
@@ -758,6 +773,8 @@
         function openModal(isEdit = false) {
             document.getElementById('training-modal').classList.add('active');
             populateEmployeeSelect();
+            document.getElementById('file-upload-status').innerText = '';
+            document.getElementById('cert-file-input').value = '';
             if(!isEdit) {
                 document.getElementById('modal-title').innerText = 'เพิ่มประวัติการฝึกอบรมใหม่';
                 document.getElementById('training-form').reset();
@@ -766,6 +783,7 @@
                 document.getElementById('preview-emp-code').innerText = '-';
                 document.getElementById('preview-emp-position').innerText = '-';
                 document.getElementById('preview-emp-dept').innerText = '-';
+                document.getElementById('cert-url').value = '';
             }
         }
         function closeModal() { document.getElementById('training-modal').classList.remove('active'); }
@@ -872,6 +890,9 @@
             document.getElementById('score').value = item.score || '';
             document.getElementById('status').value = item.status;
             document.getElementById('cert-url').value = item.certUrl || '';
+            if(item.certUrl) {
+                document.getElementById('file-upload-status').innerText = '✅ มีไฟล์/รูปภาพใบวุฒิบัตรเดิมบันทึกไว้แล้ว';
+            }
         }
 
         function deleteRecord(id) {
@@ -888,7 +909,7 @@
 
             if (item.certUrl && item.certUrl.trim() !== '') {
                 const urlLower = item.certUrl.toLowerCase();
-                if (urlLower.endsWith('.pdf') || urlLower.includes('pdf')) {
+                if (urlLower.startsWith('data:application/pdf') || urlLower.endsWith('.pdf') || urlLower.includes('pdf')) {
                     body.innerHTML = `
                         <div style="display: flex; flex-direction: column; gap: 1rem; height: 600px;">
                             <div style="display: flex; justify-content: space-between; align-items: center; background: #fff; padding: 0.75rem 1rem; border-radius: 0.75rem; border: 1px solid #e2e8f0;">
