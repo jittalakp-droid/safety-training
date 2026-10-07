@@ -341,10 +341,10 @@
                 </div>
 
                 <div>
-                    <label style="display: block; font-size: 0.75rem; font-weight: bold; color: #475569; margin-bottom: 0.25rem;">อัปโหลดรูปภาพ / ไฟล์ PDF วุฒิบัตรจากเครื่อง (หรือวางลิงก์)</label>
-                    <div style="display: flex; gap: 0.5rem; align-items: center;">
+                    <label style="display: block; font-size: 0.75rem; font-weight: bold; color: #475569; margin-bottom: 0.25rem;">ใบวุฒิบัตร: เลือกไฟล์จากเครื่อง หรือวางลิงก์ (URL / PDF)</label>
+                    <div style="display: flex; flex-direction: column; gap: 0.5rem;">
                         <input type="file" id="cert-file-input" accept="image/*,application/pdf" onchange="handleFileUpload(event)" style="padding: 0.4rem; font-size: 0.8rem;">
-                        <input type="hidden" id="cert-url">
+                        <input type="url" id="cert-url" placeholder="หรือวางลิงก์เว็บรูปภาพ/PDF ที่นี่ (เช่น https://...)">
                     </div>
                     <p id="file-upload-status" style="font-size: 0.7rem; color: #059669; margin-top: 0.25rem;"></p>
                 </div>
@@ -430,13 +430,13 @@
         ];
 
         let masterEmployees = JSON.parse(localStorage.getItem('master_employees_v4')) || defaultMasterEmployees;
-        let trainingRecords = JSON.parse(localStorage.getItem('training_records_db_v12')) || defaultTrainingRecords;
+        let trainingRecords = JSON.parse(localStorage.getItem('training_records_db_v13')) || defaultTrainingRecords;
         let adminPassword = localStorage.getItem('admin_password') || 'admin123';
         let isAdminLoggedIn = sessionStorage.getItem('is_admin_logged_in') === 'true';
 
         function saveToStorage() {
             localStorage.setItem('master_employees_v4', JSON.stringify(masterEmployees));
-            localStorage.setItem('training_records_db_v12', JSON.stringify(trainingRecords));
+            localStorage.setItem('training_records_db_v13', JSON.stringify(trainingRecords));
         }
 
         function resetToDefaultData() {
@@ -599,7 +599,7 @@
             const reader = new FileReader();
             reader.onload = function(uploadEvent) {
                 document.getElementById('cert-url').value = uploadEvent.target.result;
-                document.getElementById('file-upload-status').innerText = `✅ อัปโหลดไฟล์ "${file.name}" เรียบร้อยแล้ว`;
+                document.getElementById('file-upload-status').innerText = `✅ โหลดไฟล์ "${file.name}" เข้าช่องลิงก์เรียบร้อยแล้ว`;
             };
             reader.readAsDataURL(file);
         }
@@ -891,7 +891,7 @@
             document.getElementById('status').value = item.status;
             document.getElementById('cert-url').value = item.certUrl || '';
             if(item.certUrl) {
-                document.getElementById('file-upload-status').innerText = '✅ มีไฟล์/รูปภาพใบวุฒิบัตรเดิมบันทึกไว้แล้ว';
+                document.getElementById('file-upload-status').innerText = '✅ มีลิงก์หรือไฟล์ใบวุฒิบัตรเดิมบันทึกไว้แล้ว';
             }
         }
 
