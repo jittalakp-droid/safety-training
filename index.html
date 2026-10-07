@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบจัดการประวัติฝึกอบรมพนักงานและผู้ปฏิบัติงาน (Training Record System)</title>
+    <!-- Tailwind CSS Play CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts - Prompt -->
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Prompt', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    <style>
+        @media print {
+            .no-print { display: none !important; }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+
+    <!-- Header Navigation -->
+    <header class="bg-gradient-to-r from-blue-700 via-indigo-700 to-slate-900 text-white shadow-lg sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="bg-white/10 p-2.5 rounded-xl backdrop-blur-md border border-white/20">
+                    <i class="fa-solid fa-graduation-cap text-2xl text-blue-300"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl sm:text-2xl font-bold tracking-tight">ระบบประวัติฝึกอบรมพนักงาน</h1>
+                    <p class="text-xs text-blue-200">Employee & Operator Training Records & Certificate Management</p>
+                </div>
+            </div>
+
+            <!-- Tab Switcher -->
+            <div class="flex items-center space-x-2">
+                <div class="bg-slate-800/60 p-1.5 rounded-xl border border-slate-700 flex space-x-1">
+                    <button onclick="switchTab('employee')" id="btn-tab-employee" class="px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all bg-blue-600 text-white shadow-sm flex items-center space-x-2">
+                        <i class="fa-solid fa-users"></i>
+                        <span>มุมมองพนักงาน</span>
+                    </button>
+                    <button onclick="switchTab('admin')" id="btn-tab-admin" class="px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all text-slate-300 hover:text-white flex items-center space-x-2">
+                        <i class="fa-solid fa-gauge-high"></i>
+                        <span>แอดมินหลังบ้าน</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        <!-- ================= EMPLOYEE VIEW SECTION ================= -->
+        <div id="section-employee" class="space-y-6">
+            <!-- Search & Filter Bar -->
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div class="md:col-span-2 relative">
+                        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </div>
+                        <input type="text" id="search-input" oninput="filterData()" placeholder="ค้นหาด้วย ชื่อพนักงาน, รหัส, ตำแหน่ง หรือ ชื่อหลักสูตร..." class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <select id="filter-dept" onchange="filterData()" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="">ทุกแผนก / ฝ่ายทั้งหมด</option>
+                            <option value="IT & Digital">IT & Digital</option>
+                            <option value="Production">Production (ฝ่ายผลิต)</option>
+                            <option value="Quality Assurance">Quality Assurance (QA)</option>
+                            <option value="Engineering & Maintenance">Engineering & Maintenance</option>
+                            <option value="Safety & Environment">Safety (จป./สิ่งแวดล้อม)</option>
+                            <option value="HR & Admin">HR & Admin</option>
+                        </select>
+                    </div>
+                    <div>
+                        <select id="filter-status" onchange="filterData()" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="">สถานะใบวุฒิบัตรทั้งหมด</option>
+                            <option value="ผ่านการอบรมแล้ว">ผ่านการอบรมแล้ว (Active)</option>
+                            <option value="กำลังดำเนินการ">กำลังดำเนินการ (In Progress)</option>
+                            <option value="หมดอายุ/ต้องอบรมซ้ำ">หมดอายุ / ต้องอบรมซ้ำ (Expired)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Training Records Table -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+                    <div>
+                        <h3 class="font-bold text-slate-800 text-lg">รายการประวัติการฝึกอบรม</h3>
+                        <p class="text-xs text-slate-500">แสดงข้อมูลการฝึกอบรมและสถานะใบวุฒิบัตรของพนักงานทั้งหมดในระบบ</p>
+                    </div>
+                    <span id="record-count" class="bg-blue-50 text-blue-700 px-3 py-1 rounded-full text-xs font-semibold border border-blue-200">
+                        0 รายการ
+                    </span>
+                </div>
+                
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-50 text-slate-600 text-xs font-semibold uppercase tracking-wider border-b border-slate-200">
+                                <th class="py-3.5 px-6">พนักงาน / ตำแหน่ง</th>
+                                <th class="py-3.5 px-6">แผนก / ฝ่าย</th>
+                                <th class="py-3.5 px-6">หลักสูตร / สถาบัน</th>
+                                <th class="py-3.5 px-6">วันที่อบรม & อายุใบประกาศ</th>
+                                <th class="py-3.5 px-6">สถานะ & ผลประเมิน</th>
+                                <th class="py-3.5 px-6 text-center">ใบวุฒิบัตร</th>
+                            </tr>
+                        </thead>
+                        <tbody id="employee-table-body" class="divide-y divide-slate-100 text-sm"></tbody>
+                    </table>
+                </div>
+                <!-- Empty State -->
+                <div id="empty-state" class="hidden py-16 text-center">
+                    <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-3 text-slate-400">
+                        <i class="fa-solid fa-folder-open text-2xl"></i>
+                    </div>
+                    <h4 class="text-slate-700 font-semibold">ไม่พบข้อมูลการฝึกอบรม</h4>
+                    <p class="text-slate-400 text-xs mt-1">ลองเปลี่ยนคำค้นหา หรือเพิ่มข้อมูลใหม่ผ่านระบบแอดมิน</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= ADMIN VIEW SECTION ================= -->
+        <div id="section-admin" class="hidden space-y-6">
+            <!-- Dashboard Stats -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 flex items-center space-x-4">
+                    <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl font-bold">
+                        <i class="fa-solid fa-clipboard-list"></i>
+                    </div>
+                    <div>
+                        <p class="text-xs text-slate-500 font-medium">ประวัติทั้งหมด</p>
+                        <h4 id="stat-total" class="text-2xl font-bold text-slate-800">0</h4>
+                    </div>
+                </div>
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 flex items-center space-x-4">
+                    <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl font-bold">
+                        <i class="fa-solid fa-circle-check"></i>
+                    </div>
+                    <div>
+                        <p class="text-xs text-slate-500 font-medium">ผ่านการอบรมแล้ว</p>
+                        <h4 id="stat-passed" class="text-2xl font-bold text-slate-800">0</h4>
+                    </div>
+                </div>
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 flex items-center space-x-4">
+                    <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-xl font-bold">
+                        <i class="fa-solid fa-clock-rotate-left"></i>
+                    </div>
+                    <div>
+                        <p class="text-xs text-slate-500 font-medium">ชั่วโมงอบรมสะสม</p>
+                        <h4 id="stat-hours" class="text-2xl font-bold text-slate-800">0 ชม.</h4>
+                    </div>
+                </div>
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 flex items-center space-x-4">
+                    <div class="w-12 h-12 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center text-xl font-bold">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                    </div>
+                    <div>
+                        <p class="text-xs text-slate-500 font-medium">หมดอายุ/ต้องอบรมซ้ำ</p>
+                        <h4 id="stat-expired" class="text-2xl font-bold text-slate-800">0</h4>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin Action Bar -->
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div class="relative w-full sm:w-96">
+                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </div>
+                    <input type="text" id="admin-search-input" oninput="filterAdminData()" placeholder="ค้นหาในระบบจัดการแอดมิน..." class="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div class="flex items-center space-x-3 w-full sm:w-auto justify-end">
+                    <button onclick="resetToDefaultData()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-xl text-sm transition-all flex items-center space-x-2">
+                        <i class="fa-solid fa-rotate-right"></i>
+                        <span>โหลดข้อมูลตัวอย่าง</span>
+                    </button>
+                    <button onclick="openModal()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl text-sm shadow-sm transition-all flex items-center space-x-2">
+                        <i class="fa-solid fa-plus"></i>
+                        <span>เพิ่มประวัติการฝึกอบรมใหม่</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Admin Table -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+                    <h3 class="font-bold text-slate-800 text-lg">จัดการข้อมูลประวัติการอบรม (Admin Panel)</h3>
+                    <span id="admin-record-count" class="text-xs text-slate-500 font-medium">0 รายการ</span>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-50 text-slate-600 text-xs font-semibold uppercase tracking-wider border-b border-slate-200">
+                                <th class="py-3.5 px-6">รหัส / พนักงาน & ตำแหน่ง</th>
+                                <th class="py-3.5 px-6">แผนก</th>
+                                <th class="py-3.5 px-6">หลักสูตร</th>
+                                <th class="py-3.5 px-6">อายุวุฒิบัตร</th>
+                                <th class="py-3.5 px-6">สถานะ</th>
+                                <th class="py-3.5 px-6 text-center">จัดการ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-table-body" class="divide-y divide-slate-100 text-sm"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 py-6 mt-12 text-center text-xs text-slate-500">
+        <p>© 2026 ระบบประวัติฝึกอบรมพนักงานและผู้ปฏิบัติงาน (Employee Training & Certification System). สงวนลิขสิทธิ์ทั้งหมด.</p>
+    </footer>
+
+    <!-- ================= MODAL: ADD / EDIT TRAINING RECORD ================= -->
+    <div id="training-modal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-slate-100 p-6 space-y-4">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                <h3 id="modal-title" class="font-bold text-slate-800 text-lg flex items-center space-x-2">
+                    <i class="fa-solid fa-file-pen text-blue-600"></i>
+                    <span>เพิ่มประวัติการฝึกอบรมใหม่</span>
+                </h3>
+                <button onclick="closeModal()" class="w-8 h-8 rounded-full bg-slate-200 hover:bg-slate-300 flex items-center justify-center text-slate-600">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <form id="training-form" onsubmit="saveTrainingRecord(event)" class="space-y-4">
+                <input type="hidden" id="record-id">
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">รหัสพนักงาน <span class="text-rose-500">*</span></label>
+                        <input type="text" id="emp-code" required placeholder="เช่น EMP-001" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">ชื่อ-นามสกุลพนักงาน <span class="text-rose-500">*</span></label>
+                        <input type="text" id="emp-name" required placeholder="เช่น นายสมชาย ใจดี" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">ตำแหน่งพนักงาน <span class="text-rose-500">*</span></label>
+                        <input type="text" id="emp-position" required placeholder="เช่น Senior Software Engineer / Operator" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">แผนก / ฝ่าย <span class="text-rose-500">*</span></label>
+                        <select id="emp-dept" required class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="IT & Digital">IT & Digital</option>
+                            <option value="Production">Production (ฝ่ายผลิต)</option>
+                            <option value="Quality Assurance">Quality Assurance (QA)</option>
+                            <option value="Engineering & Maintenance">Engineering & Maintenance</option>
+                            <option value="Safety & Environment">Safety (จป./สิ่งแวดล้อม)</option>
+                            <option value="HR & Admin">HR & Admin</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">ชื่อหลักสูตรอบรม <span class="text-rose-500">*</span></label>
+                    <input type="text" id="course-name" required placeholder="เช่น Advanced Cybersecurity 2026" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">สถาบัน / ผู้อบรม</label>
+                        <input type="text" id="provider" placeholder="เช่น TechGuids Academy" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">วันที่อบรม <span class="text-rose-500">*</span></label>
+                        <input type="date" id="training-date" required class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">อายุวุฒิบัตร (Expiration) <span class="text-rose-500">*</span></label>
+                        <select id="validity-period" required class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="0">ไม่มีวันหมดอายุ (Lifetime)</option>
+                            <option value="1">1 ปี</option>
+                            <option value="2">2 ปี</option>
+                            <option value="3">3 ปี</option>
+                            <option value="5">5 ปี</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">จำนวนชั่วโมงอบรม</label>
+                        <input type="number" id="hours" min="1" max="100" value="6" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">ผลประเมิน / คะแนน (%)</label>
+                        <input type="text" id="score" placeholder="เช่น ผ่าน (95%)" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">สถานะ</label>
+                        <select id="status" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="ผ่านการอบรมแล้ว">ผ่านการอบรมแล้ว</option>
+                            <option value="กำลังดำเนินการ">กำลังดำเนินการ</option>
+                            <option value="หมดอายุ/ต้องอบรมซ้ำ">หมดอายุ/ต้องอบรมซ้ำ</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">ลิงก์ใบวุฒิบัตร (Certificate Image URL)</label>
+                    <input type="url" id="cert-url" placeholder="https://..." class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+
+                <div class="pt-4 flex items-center justify-end space-x-3 border-t border-slate-100">
+                    <button type="button" onclick="closeModal()" class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-xl text-sm">ยกเลิก</button>
+                    <button type="submit" class="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl text-sm shadow-md">บันทึกข้อมูล</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ================= MODAL: VIEW CERTIFICATE ================= -->
+    <div id="cert-modal" class="fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-md hidden flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-3xl w-full overflow-hidden border border-slate-100">
+            <div class="px-6 py-4 bg-gradient-to-r from-blue-700 to-indigo-800 text-white flex items-center justify-between">
+                <h3 class="font-bold text-lg flex items-center space-x-2">
+                    <i class="fa-solid fa-award text-amber-300"></i>
+                    <span>ใบวุฒิบัตรผ่านการฝึกอบรม (Certificate of Completion)</span>
+                </h3>
+                <div class="flex items-center space-x-2">
+                    <button onclick="window.print()" class="px-3 py-1.5 bg-white/10 hover:bg-white/20 rounded-lg text-xs font-medium no-print flex items-center space-x-1">
+                        <i class="fa-solid fa-print"></i><span>พิมพ์ / PDF</span>
+                    </button>
+                    <button onclick="closeCertModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white">✕</button>
+                </div>
+            </div>
+
+            <div class="p-8 sm:p-12 text-center bg-slate-50 relative overflow-hidden">
+                <div id="cert-content-box" class="bg-white border-8 border-double border-amber-500/60 p-8 sm:p-12 rounded-2xl shadow-xl relative space-y-4">
+                    <div class="w-16 h-16 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mx-auto text-2xl shadow-inner">
+                        <i class="fa-solid fa-award"></i>
+                    </div>
+                    <h4 class="text-xs uppercase tracking-widest text-slate-400 font-bold">ใบประกาศนียบัตรฉบับนี้มอบให้ไว้เพื่อแสดงว่า</h4>
+                    <h2 id="cert-emp-name" class="text-2xl sm:text-3xl font-extrabold text-slate-800 tracking-tight">นายสมชาย ใจดี</h2>
+                    <p id="cert-emp-position" class="text-sm font-semibold text-blue-600">Senior Software Engineer (IT & Digital)</p>
+                    <p class="text-sm text-slate-600 max-w-lg mx-auto pt-2">ได้ผ่านการฝึกอบรมหลักสูตรมาตรฐานและปฏิบัติงานตามเกณฑ์การประเมินเรียบร้อยแล้ว ในหลักสูตร:</p>
+                    <h3 id="cert-course-name" class="text-xl sm:text-2xl font-bold text-indigo-700 py-1">Advanced Cybersecurity</h3>
+                    
+                    <div class="flex flex-wrap justify-center gap-6 pt-4 text-xs text-slate-500 border-t border-slate-100 mt-6">
+                        <div><span class="block font-semibold text-slate-700">สถาบันผู้อบรม</span><span id="cert-provider">-</span></div>
+                        <div><span class="block font-semibold text-slate-700">วันที่ออกวุฒิบัตร</span><span id="cert-date">-</span></div>
+                        <div><span class="block font-semibold text-slate-700">วันหมดอายุ</span><span id="cert-expire-date">-</span></div>
+                        <div><span class="block font-semibold text-slate-700">ชั่วโมงอบรม</span><span id="cert-hours">-</span></div>
+                    </div>
+                </div>
+                <div id="cert-image-container" class="hidden mt-4">
+                    <img id="cert-img-src" src="" alt="Certificate" class="max-h-[500px] mx-auto rounded-xl shadow-lg border border-slate-200 object-contain">
+                </div>
+            </div>
+
+            <div class="px-6 py-4 bg-slate-100 border-t border-slate-200 flex justify-end">
+                <button onclick="closeCertModal()" class="px-5 py-2 bg-slate-800 hover:bg-slate-900 text-white rounded-xl text-sm font-medium">ปิดหน้าต่าง</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script Application Logic -->
+    <script>
+        const defaultTrainingRecords = [
+            { id: "TR-001", empCode: "EMP-001", empName: "นายสมชาย ใจดี", empPosition: "Senior Software Engineer", dept: "IT & Digital", course: "Advanced Cybersecurity & Data Privacy 2026", provider: "TechGuids Academy", date: "2024-03-15", validityYears: 2, hours: 6, score: "ผ่าน (95%)", status: "ผ่านการอบรมแล้ว", certUrl: "" },
+            { id: "TR-002", empCode: "EMP-002", empName: "นางสาวสมหญิง รักงาน", empPosition: "Senior Operator", dept: "Production", course: "Standard Operating Procedures (SOP) & Machine Safety", provider: "Safety First Thailand", date: "2025-06-10", validityYears: 1, hours: 12, score: "ผ่าน (88%)", status: "หมดอายุ/ต้องอบรมซ้ำ", certUrl: "" },
+            { id: "TR-003", empCode: "EMP-003", empName: "นายกิตติ มั่นคง", empPosition: "QA Inspector", dept: "Quality Assurance", course: "ISO 9001:2015 Internal Quality Auditor", provider: "TUV Bureau Veritas", date: "2026-01-20", validityYears: 3, hours: 18, score: "ผ่าน (92%)", status: "ผ่านการอบรมแล้ว", certUrl: "" },
+            { id: "TR-004", empCode: "EMP-004", empName: "นางสาวดวงใจ ปลอดภัย", empPosition: "Safety Officer (จป.วิชาชีพ)", dept: "Safety & Environment", course: "Occupational Health and Safety Management", provider: "MOL Safety Dept", date: "2026-04-10", validityYears: 0, hours: 30, score: "ผ่าน (98%)", status: "ผ่านการอบรมแล้ว", certUrl: "" },
+            { id: "TR-005", empCode: "EMP-005", empName: "นายประเสริฐ ช่างทอง", empPosition: "Maintenance Technician", dept: "Engineering & Maintenance", course: "Electrical Safety & LOTO System", provider: "Power Skill Center", date: "2026-05-01", validityYears: 2, hours: 8, score: "กำลังประเมินผล", status: "กำลังดำเนินการ", certUrl: "" }
+        ];
+
+        let trainingRecords = JSON.parse(localStorage.getItem('training_records_db_v7')) || defaultTrainingRecords;
+
+        function saveToStorage() {
+            localStorage.setItem('training_records_db_v7', JSON.stringify(trainingRecords));
+        }
+
+        function resetToDefaultData() {
+            if(confirm('คุณต้องการรีเซ็ตข้อมูลเป็นชุดตัวอย่างเริ่มต้นใช่หรือไม่?')) {
+                trainingRecords = [...defaultTrainingRecords];
+                saveToStorage();
+                renderAll();
+                alert('รีเซ็ตข้อมูลเรียบร้อยแล้ว');
+            }
+        }
+
+        function switchTab(tabName) {
+            const empSection = document.getElementById('section-employee');
+            const adminSection = document.getElementById('section-admin');
+            const btnEmp = document.getElementById('btn-tab-employee');
+            const btnAdmin = document.getElementById('btn-tab-admin');
+
+            if(tabName === 'employee') {
+                empSection.classList.remove('hidden');
+                adminSection.classList.add('hidden');
+                btnEmp.className = "px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all bg-blue-600 text-white shadow-sm flex items-center space-x-2";
+                btnAdmin.className = "px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all text-slate-300 hover:text-white flex items-center space-x-2";
+            } else {
+                empSection.classList.add('hidden');
+                adminSection.classList.remove('hidden');
+                btnAdmin.className = "px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all bg-blue-600 text-white shadow-sm flex items-center space-x-2";
+                btnEmp.className = "px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all text-slate-300 hover:text-white flex items-center space-x-2";
+                renderAdminTable();
+                updateStats();
+            }
+        }
+
+        function calculateExpiry(dateStr, validityYears) {
+            if (!validityYears || validityYears == 0) return { expiryText: "ไม่มีวันหมดอายุ (Lifetime)", isExpired: false };
+            const trainingDate = new Date(dateStr);
+            const expiryDate = new Date(trainingDate);
+            expiryDate.setFullYear(trainingDate.getFullYear() + parseInt(validityYears));
+            const today = new Date();
+            const isExpired = today > expiryDate;
+            return {
+                expiryDateObj: expiryDate,
+                expiryText: expiryDate.toLocaleDateString('th-TH', { year: 'numeric', month: 'short', day: 'numeric' }) + ` (${validityYears} ปี)`,
+                isExpired: isExpired
+            };
+        }
+
+        function renderEmployeeTable(dataToRender = trainingRecords) {
+            const tbody = document.getElementById('employee-table-body');
+            const emptyState = document.getElementById('empty-state');
+            const recordCount = document.getElementById('record-count');
+            
+            tbody.innerHTML = '';
+            recordCount.innerText = `${dataToRender.length} รายการ`;
+
+            if(dataToRender.length === 0) {
+                emptyState.classList.remove('hidden');
+                return;
+            } else {
+                emptyState.classList.add('hidden');
+            }
+
+            dataToRender.forEach(item => {
+                const expiryInfo = calculateExpiry(item.date, item.validityYears);
+                let effectiveStatus = item.status;
+                if(expiryInfo.isExpired && effectiveStatus !== 'กำลังดำเนินการ') effectiveStatus = 'หมดอายุ/ต้องอบรมซ้ำ';
+
+                let statusBadge = '';
+                if(effectiveStatus === 'ผ่านการอบรมแล้ว') {
+                    statusBadge = '<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200"><i class="fa-solid fa-check mr-1.5"></i>ผ่านแล้ว</span>';
+                } else if(effectiveStatus === 'กำลังดำเนินการ') {
+                    statusBadge = '<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200"><i class="fa-solid fa-spinner mr-1.5 animate-spin"></i>กำลังดำเนินการ</span>';
+                } else {
+                    statusBadge = '<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200"><i class="fa-solid fa-triangle-exclamation mr-1.5"></i>หมดอายุ / อบรมซ้ำ</span>';
+                }
+
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50/85 transition-colors border-b border-slate-100";
+                tr.innerHTML = `
+                    <td class="py-4 px-6">
+                        <div class="font-bold text-slate-800">${item.empName}</div>
+                        <div class="text-xs text-blue-600 font-medium">${item.empCode} • ${item.empPosition || 'พนักงาน'}</div>
+                    </td>
+                    <td class="py-4 px-6"><span class="px-2.5 py-1 bg-slate-100 text-slate-700 rounded-lg text-xs font-medium">${item.dept}</span></td>
+                    <td class="py-4 px-6">
+                        <div class="font-semibold text-slate-800">${item.course}</div>
+                        <div class="text-xs text-slate-400">สถาบัน: ${item.provider || 'ภายในองค์กร'} (${item.hours || 6} ชม.)</div>
+                    </td>
+                    <td class="py-4 px-6">
+                        <div class="text-xs text-slate-700">อบรม: ${new Date(item.date).toLocaleDateString('th-TH', {year: 'numeric', month: 'short', day: 'numeric'})}</div>
+                        <div class="text-[11px] ${expiryInfo.isExpired ? 'text-rose-600 font-bold' : 'text-slate-500'}">หมดอายุ: ${expiryInfo.expiryText}</div>
+                    </td>
+                    <td class="py-4 px-6">
+                        <div>${statusBadge}</div>
+                        <div class="text-[11px] text-slate-500 mt-1">ผล: ${item.score || 'ผ่านเกณฑ์'}</div>
+                    </td>
+                    <td class="py-4 px-6 text-center">
+                        <button onclick='openCertModal(${JSON.stringify(item)})' class="px-3.5 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-xl text-xs font-semibold transition-all border border-indigo-200 shadow-sm inline-flex items-center space-x-1.5">
+                            <i class="fa-solid fa-award"></i><span>ดูใบวุฒิบัตร</span>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function filterData() {
+            const query = document.getElementById('search-input').value.toLowerCase();
+            const dept = document.getElementById('filter-dept').value;
+            const status = document.getElementById('filter-status').value;
+
+            const filtered = trainingRecords.filter(item => {
+                const matchQuery = item.empName.toLowerCase().includes(query) || 
+                                   item.empCode.toLowerCase().includes(query) || 
+                                   item.course.toLowerCase().includes(query) ||
+                                   (item.empPosition && item.empPosition.toLowerCase().includes(query));
+                const matchDept = dept === "" || item.dept === dept;
+                const expiryInfo = calculateExpiry(item.date, item.validityYears);
+                let effStatus = item.status;
+                if(expiryInfo.isExpired && effStatus !== 'กำลังดำเนินการ') effStatus = 'หมดอายุ/ต้องอบรมซ้ำ';
+                const matchStatus = status === "" || effStatus === status;
+                return matchQuery && matchDept && matchStatus;
+            });
+
+            renderEmployeeTable(filtered);
+        }
+
+        function renderAdminTable(dataToRender = trainingRecords) {
+            const tbody = document.getElementById('admin-table-body');
+            const adminCount = document.getElementById('admin-record-count');
+            tbody.innerHTML = '';
+            adminCount.innerText = `${dataToRender.length} รายการ`;
+
+            dataToRender.forEach(item => {
+                const expiryInfo = calculateExpiry(item.date, item.validityYears);
+                let effectiveStatus = item.status;
+                if(expiryInfo.isExpired && effectiveStatus !== 'กำลังดำเนินการ') effectiveStatus = 'หมดอายุ/ต้องอบรมซ้ำ';
+
+                let statusBadge = '';
+                if(effectiveStatus === 'ผ่านการอบรมแล้ว') {
+                    statusBadge = '<span class="px-2 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">ผ่านแล้ว</span>';
+                } else if(effectiveStatus === 'กำลังดำเนินการ') {
+                    statusBadge = '<span class="px-2 py-0.5 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200">กำลังดำเนินการ</span>';
+                } else {
+                    statusBadge = '<span class="px-2 py-0.5 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200">หมดอายุ</span>';
+                }
+
+                let validityLabel = item.validityYears == 0 ? 'ไม่มีวันหมดอายุ' : `${item.validityYears} ปี`;
+
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50 transition-colors border-b border-slate-100";
+                tr.innerHTML = `
+                    <td class="py-4 px-6">
+                        <div class="font-bold text-slate-800">${item.empName}</div>
+                        <div class="text-xs text-blue-600">${item.empCode} • ${item.empPosition || '-'}</div>
+                    </td>
+                    <td class="py-4 px-6 text-xs text-slate-700 font-medium">${item.dept}</td>
+                    <td class="py-4 px-6">
+                        <div class="font-semibold text-slate-800 truncate max-w-xs">${item.course}</div>
+                        <div class="text-xs text-slate-400">${item.hours || 6} ชม. | ออกเมื่อ: ${item.date}</div>
+                    </td>
+                    <td class="py-4 px-6 text-xs text-slate-600">
+                        <span class="font-medium">${validityLabel}</span>
+                        <div class="text-[11px] text-slate-400">หมดอายุ: ${expiryInfo.expiryText.split(' ')[0]}</div>
+                    </td>
+                    <td class="py-4 px-6">${statusBadge}</td>
+                    <td class="py-4 px-6 text-center space-x-2">
+                        <button onclick='editRecord("${item.id}")' class="p-2 bg-slate-100 hover:bg-blue-100 hover:text-blue-600 text-slate-600 rounded-xl transition-all" title="แก้ไข"><i class="fa-solid fa-pen-to-square"></i></button>
+                        <button onclick='deleteRecord("${item.id}")' class="p-2 bg-slate-100 hover:bg-rose-100 hover:text-rose-600 text-slate-600 rounded-xl transition-all" title="ลบ"><i class="fa-solid fa-trash-can"></i></button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function filterAdminData() {
+            const query = document.getElementById('admin-search-input').value.toLowerCase();
+            const filtered = trainingRecords.filter(item => 
+                item.empName.toLowerCase().includes(query) || 
+                item.empCode.toLowerCase().includes(query) || 
+                item.course.toLowerCase().includes(query) ||
+                (item.empPosition && item.empPosition.toLowerCase().includes(query))
+            );
+            renderAdminTable(filtered);
+        }
+
+        function updateStats() {
+            document.getElementById('stat-total').innerText = trainingRecords.length;
+            let passedCount = 0, totalHours = 0, expiredCount = 0;
+
+            trainingRecords.forEach(item => {
+                const expiryInfo = calculateExpiry(item.date, item.validityYears);
+                let effStatus = item.status;
+                if(expiryInfo.isExpired && effStatus !== 'กำลังดำเนินการ') effStatus = 'หมดอายุ/ต้องอบรมซ้ำ';
+                if(effStatus === 'ผ่านการอบรมแล้ว') {
+                    passedCount++;
+                    totalHours += parseInt(item.hours || 6);
+                }
+                if(effStatus === 'หมดอายุ/ต้องอบรมซ้ำ') expiredCount++;
+            });
+
+            document.getElementById('stat-passed').innerText = passedCount;
+            document.getElementById('stat-hours').innerText = totalHours + ' ชม.';
+            document.getElementById('stat-expired').innerText = expiredCount;
+        }
+
+        function openModal(isEdit = false) {
+            document.getElementById('training-modal').classList.remove('hidden');
+            if(!isEdit) {
+                document.getElementById('modal-title').innerHTML = '<i class="fa-solid fa-file-pen text-blue-600"></i><span>เพิ่มประวัติการฝึกอบรมใหม่</span>';
+                document.getElementById('training-form').reset();
+                document.getElementById('record-id').value = '';
+                document.getElementById('training-date').value = new Date().toISOString().split('T')[0];
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('training-modal').classList.add('hidden');
+        }
+
+        function editRecord(id) {
+            const item = trainingRecords.find(r => r.id === id);
+            if(!item) return;
+            openModal(true);
+            document.getElementById('modal-title').innerHTML = '<i class="fa-solid fa-pen-to-square text-blue-600"></i><span>แก้ไขประวัติการฝึกอบรม</span>';
+            document.getElementById('record-id').value = item.id;
+            document.getElementById('emp-code').value = item.empCode;
+            document.getElementById('emp-name').value = item.empName;
+            document.getElementById('emp-position').value = item.empPosition || '';
+            document.getElementById('emp-dept').value = item.dept;
+            document.getElementById('course-name').value = item.course;
+            document.getElementById('provider').value = item.provider || '';
+            document.getElementById('training-date').value = item.date;
+            document.getElementById('validity-period').value = item.validityYears !== undefined ? item.validityYears : 2;
+            document.getElementById('hours').value = item.hours || 6;
+            document.getElementById('score').value = item.score || '';
+            document.getElementById('status').value = item.status;
+            document.getElementById('cert-url').value = item.certUrl || '';
+        }
+
+        function saveTrainingRecord(e) {
+            e.preventDefault();
+            const id = document.getElementById('record-id').value;
+            const recordData = {
+                id: id ? id : 'TR-' + Date.now().toString().slice(-4),
+                empCode: document.getElementById('emp-code').value,
+                empName: document.getElementById('emp-name').value,
+                empPosition: document.getElementById('emp-position').value,
+                dept: document.getElementById('emp-dept').value,
+                course: document.getElementById('course-name').value,
+                provider: document.getElementById('provider').value,
+                date: document.getElementById('training-date').value,
+                validityYears: parseInt(document.getElementById('validity-period').value),
+                hours: parseInt(document.getElementById('hours').value) || 6,
+                score: document.getElementById('score').value,
+                status: document.getElementById('status').value,
+                certUrl: document.getElementById('cert-url').value
+            };
+
+            if(id) {
+                const index = trainingRecords.findIndex(r => r.id === id);
+                if(index !== -1) trainingRecords[index] = recordData;
+            } else {
+                trainingRecords.unshift(recordData);
+            }
+
+            saveToStorage();
+            closeModal();
+            renderAll();
+            alert('บันทึกข้อมูลสำเร็จเรียบร้อยแล้ว');
+        }
+
+        function deleteRecord(id) {
+            if(confirm('คุณแน่ใจหรือไม่ว่าต้องการลบประวัติการฝึกอบรมรายการนี้?')) {
+                trainingRecords = trainingRecords.filter(r => r.id !== id);
+                saveToStorage();
+                renderAll();
+            }
+        }
+
+        function openCertModal(item) {
+            document.getElementById('cert-emp-name').innerText = item.empName;
+            document.getElementById('cert-emp-position').innerText = `${item.empPosition || 'พนักงาน'} (${item.dept})`;
+            document.getElementById('cert-course-name').innerText = item.course;
+            document.getElementById('cert-provider').innerText = item.provider || 'สถาบันฝึกอบรมภายในองค์กร';
+            document.getElementById('cert-date').innerText = new Date(item.date).toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric' });
+            
+            const expiryInfo = calculateExpiry(item.date, item.validityYears);
+            document.getElementById('cert-expire-date').innerText = expiryInfo.expiryText;
+            document.getElementById('cert-hours').innerText = `${item.hours || 6} ชั่วโมง`;
+
+            const certContentBox = document.getElementById('cert-content-box');
+            const certImageContainer = document.getElementById('cert-image-container');
+            const certImgSrc = document.getElementById('cert-img-src');
+
+            if(item.certUrl && item.certUrl.trim() !== '') {
+                certContentBox.classList.add('hidden');
+                certImageContainer.classList.remove('hidden');
+                certImgSrc.src = item.certUrl;
+            } else {
+                certContentBox.classList.remove('hidden');
+                certImageContainer.classList.add('hidden');
+            }
+
+            document.getElementById('cert-modal').classList.remove('hidden');
+        }
+
+        function closeCertModal() {
+            document.getElementById('cert-modal').classList.add('hidden');
+        }
+
+        function renderAll() {
+            renderEmployeeTable();
+            renderAdminTable();
+            updateStats();
+        }
+
+        window.onload = function() {
+            renderAll();
+        };
+    </script>
+</body>
+</html>
