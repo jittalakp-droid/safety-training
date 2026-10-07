@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ระบบจัดการประวัติฝึกอบรมพนักงานของโรงงานผลิตน้ำมหาสวัสดิ์ (Employee Training Record System)</title>
+    <title>ระบบจัดการประวัติฝึกอบรมพนักงานและผู้ปฏิบัติงานของโรงงานผลิตน้ำมหาสวัสดิ์</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: Tahoma, sans-serif; }
         body { background-color: #f8fafc; color: #1e293b; min-height: 100vh; display: flex; flex-direction: column; }
@@ -166,7 +166,7 @@
             <div class="card" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
                 <div style="display: flex; gap: 0.5rem;">
                     <button onclick="switchAdminTab('training')" id="admin-tab-training" class="tab-btn active" style="background: #2563eb; color: white;">จัดการประวัติอบรม</button>
-                    <button onclick="switchAdminTab('employees')" id="admin-tab-employees" class="tab-btn" style="background: #f1f5f9; color: #334155;">จัดการรายชื่อพนักงานและผู้ปฏิบัติงาน (<span id="emp-master-count">0</span>)</button>
+                    <button onclick="switchAdminTab('employees')" id="admin-tab-employees" class="tab-btn" style="background: #f1f5f9; color: #334155;">จัดการรายชื่อพนักงาน (<span id="emp-master-count">0</span>)</button>
                 </div>
                 <div style="display: flex; gap: 0.5rem;">
                     <button onclick="resetToDefaultData()" class="btn btn-secondary">🔄 รีเซ็ตข้อมูล</button>
@@ -207,7 +207,7 @@
                             <th>รหัสพนักงาน</th>
                             <th>ชื่อ-นามสกุล</th>
                             <th>ตำแหน่ง</th>
-                            <th>สังกัด</th>
+                            <th>แผนก / ฝ่าย</th>
                             <th style="text-align: center;">จัดการ</th>
                         </tr>
                     </thead>
@@ -220,7 +220,7 @@
 
     <!-- Footer -->
     <footer>
-        <p>© 2026 ระบบประวัติฝึกอบรมพนักงานและผู้ปฏิบัติงาน (Employee Training System). พัฒนาขึ้นเพื่อความสะดวกในการบริหารจัดการทรัพยากรบุคคลของหน่วยงาน สปช.ฝผม.</p>
+        <p>© 2026 ระบบประวัติฝึกอบรมพนักงานและผู้ปฏิบัติงานของโรงงานผลิตน้ำมหาสวัสดิ์ (Employee Training System). พัฒนาขึ้นเพื่อความสะดวกในการบริหารจัดการทรัพยากรบุคคล.</p>
     </footer>
 
     <!-- ================= MODAL: ADMIN LOGIN ================= -->
@@ -292,7 +292,7 @@
                 <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; background: #f8fafc; padding: 0.75rem; border-radius: 0.75rem; border: 1px solid #e2e8f0; font-size: 0.75rem;">
                     <div><span style="color: #64748b; display: block;">รหัสพนักงาน</span><strong id="preview-emp-code">-</strong></div>
                     <div><span style="color: #64748b; display: block;">ตำแหน่ง</span><strong id="preview-emp-position">-</strong></div>
-                    <div><span style="color: #64748b; display: block;">สังกัด</span><strong id="preview-emp-dept">-</strong></div>
+                    <div><span style="color: #64748b; display: block;">แผนก / ฝ่าย</span><strong id="preview-emp-dept">-</strong></div>
                 </div>
 
                 <div>
@@ -316,7 +316,6 @@
                             <option value="1">1 ปี</option>
                             <option value="2">2 ปี</option>
                             <option value="3">3 ปี</option>
-                            <option value="3">4 ปี</option>
                             <option value="5">5 ปี</option>
                         </select>
                     </div>
@@ -417,6 +416,7 @@
     <!-- Application Script -->
     <script>
         const defaultMasterEmployees = [
+            { code: "00101979", name: "จิตลักษณ์ ผลเกิด", position: "นักอาชีวอนามัย 5", dept: "สปช.ฝผพ." },
             { code: "EMP-001", name: "นายสมชาย ใจดี", position: "Senior Software Engineer", dept: "IT & Digital" },
             { code: "EMP-002", name: "นางสาวสมหญิง รักงาน", position: "Senior Operator", dept: "Production" },
             { code: "EMP-003", name: "นายกิตติ มั่นคง", position: "QA Inspector", dept: "Quality Assurance" },
@@ -425,31 +425,28 @@
         ];
 
         const defaultTrainingRecords = [
-            { id: "TR-001", empCode: "EMP-001", empName: "นายสมชาย ใจดี", empPosition: "Senior Software Engineer", dept: "IT & Digital", course: "Advanced Cybersecurity & Data Privacy 2026", provider: "TechGuids Academy", date: "2024-03-15", validityYears: 2, hours: 6, score: "ผ่าน (95%)", status: "ผ่านการอบรมแล้ว", certUrl: "" },
+            { id: "TR-004", empCode: "00101979", empName: "จิตลักษณ์ ผลเกิด", empPosition: "นักอาชีวอนามัย 5", dept: "สปช.ฝผพ.", course: "ทบทวนความปลอดภัยในการทำงานที่อับอากาศ", provider: "shawpat", date: "2026-10-07", validityYears: 5, hours: 6, score: "ผ่าน", status: "ผ่านการอบรมแล้ว", certUrl: "" },
+            { id: "TR-001", empCode: "EMP-001", empName: "นายสมชาย ใจดี", empPosition: "Senior Software Engineer", dept: "IT & Digital", course: "Advanced Cybersecurity & Data Privacy 2026", provider: "TechGuids Academy", date: "2024-03-15", validityYears: 2, hours: 6, score: "ผ่าน (95%)", status: "หมดอายุ/ต้องอบรมซ้ำ", certUrl: "" },
             { id: "TR-002", empCode: "EMP-002", empName: "นางสาวสมหญิง รักงาน", empPosition: "Senior Operator", dept: "Production", course: "Standard Operating Procedures (SOP)", provider: "Safety First Thailand", date: "2025-06-10", validityYears: 1, hours: 12, score: "ผ่าน (88%)", status: "หมดอายุ/ต้องอบรมซ้ำ", certUrl: "" },
             { id: "TR-003", empCode: "EMP-003", empName: "นายกิตติ มั่นคง", empPosition: "QA Inspector", dept: "Quality Assurance", course: "ISO 9001:2015 Internal Quality Auditor", provider: "TUV Bureau Veritas", date: "2026-01-20", validityYears: 3, hours: 18, score: "ผ่าน (92%)", status: "ผ่านการอบรมแล้ว", certUrl: "" }
         ];
 
-        let masterEmployees = JSON.parse(localStorage.getItem('master_employees_v5')) || defaultMasterEmployees;
-        // บังคับเช็คเวอร์ชัน ถ้าไม่ใช่เวอร์ชันล่าสุด ให้ล้างข้อมูลเก่าทิ้งทันที
-const CURRENT_DB_VERSION = 'v16'; 
-if (localStorage.getItem('db_version') !== CURRENT_DB_VERSION) {
-    localStorage.removeItem('training_records_db_v15'); // ลบเวอร์ชันเก่าทิ้ง
-    localStorage.removeItem('master_employees_v4');     // ลบพนักงานเก่าทิ้ง (ถ้าต้องการ)
-    localStorage.setItem('db_version', CURRENT_DB_VERSION);
-}
+        // บังคับรีเซ็ตและโหลดข้อมูลชุดใหม่ล่าสุดเมื่อเปลี่ยนเวอร์ชัน (v17) โดยไม่ลบรหัสผ่านแอดมิน
+        const CURRENT_DB_VERSION = 'v17';
+        if (localStorage.getItem('db_version') !== CURRENT_DB_VERSION) {
+            localStorage.setItem('master_employees_v4', JSON.stringify(defaultMasterEmployees));
+            localStorage.setItem('training_records_db_v17', JSON.stringify(defaultTrainingRecords));
+            localStorage.setItem('db_version', CURRENT_DB_VERSION);
+        }
 
-let masterEmployees = JSON.parse(localStorage.getItem('master_employees_v4')) || defaultMasterEmployees;
-let trainingRecords = JSON.parse(localStorage.getItem('training_records_db_v16')) || defaultTrainingRecords;
-
-// บังคับเซฟทับทันทีเพื่อให้ข้อมูลตรงกับ default ล่าสุด
-localStorage.setItem('training_records_db_v16', JSON.stringify(trainingRecords));
+        let masterEmployees = JSON.parse(localStorage.getItem('master_employees_v4')) || defaultMasterEmployees;
+        let trainingRecords = JSON.parse(localStorage.getItem('training_records_db_v17')) || defaultTrainingRecords;
         let adminPassword = localStorage.getItem('admin_password') || 'admin123';
         let isAdminLoggedIn = sessionStorage.getItem('is_admin_logged_in') === 'true';
 
         function saveToStorage() {
             localStorage.setItem('master_employees_v4', JSON.stringify(masterEmployees));
-            localStorage.setItem('training_records_db_v14', JSON.stringify(trainingRecords));
+            localStorage.setItem('training_records_db_v17', JSON.stringify(trainingRecords));
         }
 
         function resetToDefaultData() {
